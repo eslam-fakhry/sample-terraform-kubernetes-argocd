@@ -15,7 +15,7 @@ You may the detailed explanation of that example repository in the following art
 
 First, clone that repo:
 ```shell
-$ git clone https://github.com/piomin/sample-terraform-kubernetes-argocd.git
+$ git clone https://github.com/eslam-fakhry/sample-terraform-kubernetes-argocd
 $ cd sample-terraform-kubernetes-argocd
 ```
 

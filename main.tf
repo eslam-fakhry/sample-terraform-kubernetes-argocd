@@ -1,59 +1,19 @@
-terraform {
-  required_providers {
-    kind = {
-      source = "tehcyx/kind"
-      version = "0.2.1"
-    }
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "1.14.0"
-    }
-  }
-}
 
-provider "kind" {}
-
-resource "kind_cluster" "default" {
+resource "minikube_cluster" "default" {
+  driver       = "docker"
   name = var.cluster_name
   wait_for_ready = true
-  kind_config {
-    kind = "Cluster"
-    api_version = "kind.x-k8s.io/v1alpha4"
-
-    node {
-      role = "control-plane"
-      extra_port_mappings {
-        container_port = 80
-        host_port      = 80
-      }
-      extra_port_mappings {
-        container_port = 443
-        host_port      = 443
-      }
-    }
-
-    node {
-      role = "worker"
-      image = "kindest/node:v1.27.1"
-    }
-
-    node {
-      role = "worker"
-      image = "kindest/node:v1.27.1"
-    }
-
-    node {
-      role = "worker"
-      image = "kindest/node:v1.27.1"
-    }
-  }
+  addons = [
+    "default-storageclass",
+    "storage-provisioner"
+  ]
 }
 
 provider "kubectl" {
-  host = kind_cluster.default.endpoint
-  cluster_ca_certificate = kind_cluster.default.cluster_ca_certificate
-  client_certificate = kind_cluster.default.client_certificate
-  client_key = kind_cluster.default.client_key
+  host = minikube_cluster.default.endpoint
+  cluster_ca_certificate = minikube_cluster.default.cluster_ca_certificate
+  client_certificate = minikube_cluster.default.client_certificate
+  client_key = minikube_cluster.default.client_key
 }
 
 data "kubectl_file_documents" "crds" {
@@ -91,10 +51,10 @@ resource "kubectl_manifest" "final_apply" {
 
 provider "helm" {
   kubernetes {
-    host = kind_cluster.default.endpoint
-    cluster_ca_certificate = kind_cluster.default.cluster_ca_certificate
-    client_certificate = kind_cluster.default.client_certificate
-    client_key = kind_cluster.default.client_key
+    host = minikube_cluster.default.endpoint
+    cluster_ca_certificate = minikube_cluster.default.cluster_ca_certificate
+    client_certificate = minikube_cluster.default.client_certificate
+    client_key = minikube_cluster.default.client_key
   }
 }
 
